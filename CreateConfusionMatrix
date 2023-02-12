@@ -1,0 +1,41 @@
+import pandas as pd
+from sklearn.utils.multiclass import unique_labels
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score
+import seaborn as sn
+import matplotlib.pyplot as plt
+
+def plot(y_test, y_pred):
+    labels = unique_labels(y_test)
+    column = [f'Predicted {label}' for label in labels]
+    indices = [f'Actual {label}' for label in labels]
+    table = pd.DataFrame(confusion_matrix(y_test, y_pred), columns=column, index=indices)
+    return table
+
+data = {'y_actual':    [
+         1,	1,	1,	1,	1,	1,	0,	1,	1,	1,	1,	1,	0,	0,	0,	0,	1,	0,	1,	1,	0,	1,	0,	0,	0,	1,	0,	0,	1,	1,	1,	1,	1,	0,	0,	1,	0,	0,	0,	1,	1
+        ] ,
+        'y_predicted': [
+         1,	1,	0,	0,	1,	1,	1,	1,	0,	1,	0,	0,	0,	0,	1,	1,	0,	0,	1,	1,	0,	1,	0,	1,	0,	1,	0,	0,	0,	1,	1,	1,	1,	0,	0,	0,	0,	0,	0,	0,	0
+        ]
+        }
+
+df = pd.DataFrame(data)
+print(df)
+
+confusion_matrix = pd.crosstab(df['y_actual'], df['y_predicted'], rownames=['Actual'], colnames=['Predicted'])
+print (confusion_matrix)
+
+sn.heatmap(confusion_matrix, annot=True)
+plt.title('Confusion Matrix')
+plt.show()
+#print(confusion_matrix.print_stats())
+
+fpr, tpr, thresholds = roc_curve(df['y_actual'], df['y_predicted'])
+plt.plot(fpr, tpr)
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.show()
+y = df['y_actual']
+y_true = df['y_predicted']
+print(f'Mood-Color-Reco Model: {roc_auc_score(y, y_true)}')
